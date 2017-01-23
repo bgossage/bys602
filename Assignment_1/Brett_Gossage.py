@@ -18,10 +18,12 @@ keywords = {
               "DEFINITION", "AUTHORS", "ACCESSION",
               "TITLE", "REFERENCE", "FEATURES", "ORIGIN",
               "LOCUS", "JOURNAL", "ORGANISM", "VERSION",
-              "KEYWORDS", "source", "CDS", "//"
+              "KEYWORDS", "source", "gene", "CDS", 
+              "sig_peptide", "mat_peptide" 
+              "//"
            }
 
-filtered = { "DEFINITION", "AUTHORS", "ACCESSION", "CDS" }
+filtered = { "TITLE", "DEFINITION", "AUTHORS", "ACCESSION", "CDS" }
 
 reject = keywords - filtered
 
@@ -61,9 +63,9 @@ with open( filename, "r" ) as seq_file:
          
       # If we are reading a record for a given key...
          if reading_record :
-         # And we encounter a keyword, we've reached the end of the record...
+         # And we encounter any keyword..
             if key in keywords:
-            # Transition the parser state...
+            # We've reached the end of the record...
                reading_record = False
 
             # Process the record content...
@@ -72,22 +74,29 @@ with open( filename, "r" ) as seq_file:
 
             # Clear the content string...
                content = ""
-         # end if
+            #end if key
+         # end if reading
          
          # Otherwise, add the current line to the record content...
             else:
                content += line
 
+         #end if
+    
+      # If we are not reading a record...
          if not reading_record:
-         # If we are reading a record...
+
+         # And if we encounter a key to be read...
             if key in filtered:
-            # Transition the parser state...
+            # We've reached the beginning of a record... 
                reading_record = True
             # Add the current line to the record content...
                content += line
          #end if
-
-         if tokens[0] == "//":
+         
+      # If we encounter the end of a locus,
+         if key == "//":
+         # Print an empty line...
             print "======== END RECORD =============================\n"
             output_file.write( "======== END RECORD =============================\n\n" )
          #end if
