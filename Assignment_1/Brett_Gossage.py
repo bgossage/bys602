@@ -25,6 +25,18 @@ keywords = {
 
 filtered = { "TITLE", "DEFINITION", "AUTHORS", "ACCESSION", "CDS" }
 
+def handle_definition( record, output=sys.stdout ):
+   
+   loc = record.rfind( "DEFINITION" )
+   
+   data = record[loc+12:]
+
+   output.write( "Definition: {:s}".format( data ) )
+      
+#end handle_definition() ~~~~~~~~~~~~~~~~~~~~~~~~
+
+handlers = { "DEFINITION" : handle_definition }
+
 reject = keywords - filtered
 
 print reject
@@ -34,6 +46,7 @@ if( len(sys.argv) > 1 ):
    
 reading_record = False
 key = ""
+read_key = ""
 content = ""
 
 #
@@ -69,8 +82,12 @@ with open( filename, "r" ) as seq_file:
                reading_record = False
 
             # Process the record content...
-               print content
-               output_file.write( content )
+#            print ",",key,","
+               if read_key in handlers:
+                  handlers[read_key]( content, output_file )
+            
+            #   print content
+               #output_file.write( content )
 
             # Clear the content string...
                content = ""
@@ -90,6 +107,7 @@ with open( filename, "r" ) as seq_file:
             if key in filtered:
             # We've reached the beginning of a record... 
                reading_record = True
+               read_key = key
             # Add the current line to the record content...
                content += line
          #end if
