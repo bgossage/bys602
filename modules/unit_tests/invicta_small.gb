@@ -1,0 +1,133 @@
+LOCUS       NM_001304591             705 bp    mRNA    linear   INV 31-JAN-2016
+DEFINITION  Solenopsis invicta venom allergen 3 (LOC105199703), mRNA.
+ACCESSION   NM_001304591 XM_011166905
+VERSION     NM_001304591.1
+KEYWORDS    RefSeq.
+SOURCE      Solenopsis invicta (red fire ant)
+  ORGANISM  Solenopsis invicta
+            Eukaryota; Metazoa; Ecdysozoa; Arthropoda; Hexapoda; Insecta;
+            Pterygota; Neoptera; Endopterygota; Hymenoptera; Apocrita;
+            Aculeata; Vespoidea; Formicidae; Myrmicinae; Solenopsis.
+REFERENCE   1  (bases 1 to 705)
+  AUTHORS   Wurm Y, Wang J, Riba-Grognuz O, Corona M, Nygaard S, Hunt BG,
+            Ingram KK, Falquet L, Nipitwattanaphon M, Gotzek D, Dijkstra MB,
+            Oettler J, Comtesse F, Shih CJ, Wu WJ, Yang CC, Thomas J, Beaudoing
+            E, Pradervand S, Flegel V, Cook ED, Fabbretti R, Stockinger H, Long
+            L, Farmerie WG, Oakey J, Boomsma JJ, Pamilo P, Yi SV, Heinze J,
+            Goodisman MA, Farinelli L, Harshman K, Hulo N, Cerutti L, Xenarios
+            I, Shoemaker D and Keller L.
+  TITLE     The genome of the fire ant Solenopsis invicta
+  JOURNAL   Proc. Natl. Acad. Sci. U.S.A. 108 (14), 5679-5684 (2011)
+   PUBMED   21282665
+REFERENCE   2  (bases 1 to 705)
+  AUTHORS   Schmidt M, McConnell TJ and Hoffman DR.
+  TITLE     Immunologic characterization of the recombinant fire ant venom
+            allergen Sol i 3
+  JOURNAL   Allergy 58 (4), 342-349 (2003)
+   PUBMED   12708984
+COMMENT     PROVISIONAL REFSEQ: This record has not yet been subject to final
+            NCBI review. The reference sequence was derived from AF012919.1.
+            On Feb 4, 2015 this sequence version replaced gi:751201035.
+            
+            ##Evidence-Data-START##
+            Transcript exon combination :: AF012919.1, EE131113.1 [ECO:0000332]
+            RNAseq introns              :: single sample supports all introns
+                                           SAMN00016998, SAMN00016999
+                                           [ECO:0000348]
+            ##Evidence-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..705
+                     /organism="Solenopsis invicta"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:13686"
+     gene            1..705
+                     /gene="LOC105199703"
+                     /gene_synonym="CRVP"
+                     /note="venom allergen 3"
+                     /db_xref="GeneID:105199703"
+     CDS             1..705
+                     /gene="LOC105199703"
+                     /gene_synonym="CRVP"
+                     /note="sol i 3 antigen; Allergen Sol i III; Venom allergen
+                     III; Cysteine-rich venom protein"
+                     /codon_start=1
+                     /product="venom allergen 3 precursor"
+                     /protein_id="NP_001291520.1"
+                     /db_xref="GeneID:105199703"
+                     /translation="MELIVSILWLAITAENLANTLATNYCNLQSCKRNNAIHTMCQYT
+                     SPTPGPMCLEYSNVGFTDAEKDAIVNKHNELRQRVASGKEMRGTNGPQPPAVKMPNLT
+                     WDPELATIAQRWANQCTFEHDACRNVERFAVGQNIAATSSSGKNKSTPNEMILLWYNE
+                     VKDFDNRWISSFPSDDNILMKVGHYTQIVWAKTTKIGCGRIMFKEPDNWTKHYLVCNY
+                     GPAGNVLGAPIYEIKK"
+     sig_peptide     1..66
+                     /gene="LOC105199703"
+                     /gene_synonym="CRVP"
+                     /inference="COORDINATES: ab initio prediction:SignalP:4.0"
+     mat_peptide     67..702
+                     /gene="LOC105199703"
+                     /gene_synonym="CRVP"
+                     /product="Venom allergen 3"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="propagated from UniProtKB/Swiss-Prot (P35778.2)"
+ORIGIN      
+        1 atggaattaa ttgtcagtat attatggctt gccataacag cggaaaactt ggctaataca
+       61 ttagcgacaa attattgcaa ccttcaatca tgtaagagaa acaatgcaat tcatacgatg
+      121 tgccaatata cctcaccaac accggggcca atgtgcttgg aatatagcaa tgtaggtttt
+      181 actgatgctg agaaagatgc tatagtaaac aaacacaatg aactgaggca gagagtcgca
+      241 tcgggtaagg aaatgagagg aacgaacggc ccccaacctc cggcggttaa aatgccgaat
+      301 ttgacctggg atcctgaatt agcgacgatt gctcaaagat gggctaatca gtgcacgttt
+      361 gaacatgatg cttgtagaaa cgtagaaaga ttcgcagtag gtcagaatat agccgcaaca
+      421 tctagctcgg gtaaaaataa gtccactcca aatgaaatga ttttattatg gtacaatgaa
+      481 gtaaaagact tcgataatcg ttggatttcc tcatttccat ctgacgacaa cattctgatg
+      541 aaagtaggac attatactca aattgtttgg gctaaaacaa cgaaaatcgg gtgcggacga
+      601 ataatgttca aggaaccaga taactggact aaacattatt tagtttgcaa ctatggtcca
+      661 gctggaaatg tgctgggtgc accaatatac gaaataaaga aatag
+//
+
+LOCUS       AY963564                 408 bp    mRNA    linear   INV 26-JUL-2016
+DEFINITION  Solenopsis invicta queen venom protein Sol i IV precursor, mRNA,
+            partial cds.
+ACCESSION   AY963564
+VERSION     AY963564.1
+KEYWORDS    .
+SOURCE      Solenopsis invicta (red fire ant)
+  ORGANISM  Solenopsis invicta
+            Eukaryota; Metazoa; Ecdysozoa; Arthropoda; Hexapoda; Insecta;
+            Pterygota; Neoptera; Endopterygota; Hymenoptera; Apocrita;
+            Aculeata; Vespoidea; Formicidae; Myrmicinae; Solenopsis.
+REFERENCE   1  (bases 1 to 408)
+  AUTHORS   Deslippe,R.J., HaghiPour-Peasley,J.D., San Francisco,M.J., Fokar,M.
+            and Renthal,R.D.
+  TITLE     Cloning and Sequencing of the cDNA of Red Imported Fire Ant Queen
+            Venom Protein, Sol i IV
+  JOURNAL   Unpublished
+REFERENCE   2  (bases 1 to 408)
+  AUTHORS   Deslippe,R.J., HaghiPour-Peasley,J.D., San Francisco,M.J., Fokar,M.
+            and Renthal,R.D.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (15-MAR-2005) Biological Sciences, Texas Tech University,
+            MS 43131, Lubbock, TX 79409, USA
+FEATURES             Location/Qualifiers
+     source          1..408
+                     /organism="Solenopsis invicta"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:13686"
+     CDS             1..>408
+                     /note="fire ant venom protein"
+                     /codon_start=1
+                     /product="queen venom protein Sol i IV precursor"
+                     /protein_id="AAY32929.1"
+                     /translation="MKTFVLVSCLLVFTQIIYALDIKEISIMNRILEKCIRTVPKHEN
+                     DPINPLKNVNVLYCAFTKRGIFTPKGVNTKQYINYCEKTVISPADIKLCKKIASKCVK
+                     KVYDRPGPVIERSKNLLSCVLKKGLLELTVYGKK"
+     sig_peptide     1..57
+ORIGIN      
+        1 atgaaaacct tcgtgcttgt ttcatgtctg ctagtgttta cgcagataat ttacgcactt
+       61 gatattaagg aaataagtat tatgaataga attttagaaa aatgtataag aacagtacca
+      121 aaacacgaaa atgatccaat aaatccttta aaaaatgtca atgtattgta ttgtgcattc
+      181 actaagcgtg gcatatttac tccaaaaggt gtaaatacga aacaatatat taactattgc
+      241 gagaagacgg tcattagtcc tgctgatata aaactgtgca agaaaatagc ttctaaatgc
+      301 gtaaagaaag tgtatgaccg cccgggacca gtcattgaaa gaagcaaaaa tctattgtca
+      361 tgtgttctaa aaaagggttt gctcgaattg acagtgtatg gcaaaaaa
+//
