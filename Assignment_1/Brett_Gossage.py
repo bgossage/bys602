@@ -26,15 +26,29 @@ if( len(sys.argv) > 1 ):
    
 parser = genebank.GenBankParser()
 
-filter_keys = { "DEFINITION" }
+filter_keys = { "DEFINITION", "ACCESSION" }
 
 parser.set_filtered( filter_keys )
 
+loci = []
+
 with open( "seq_parse.txt", "w" ) as output_file:
 
-     parser.parse( filename, output_file )
-     
+   parser.parse( filename, loci )
+
+   for locus in loci:
+      
+      print locus
+      
+      output_file.write( "\n\nLOCUS: \n" )
+      
+      output_file.write( "Definition: {:s}\n".format( locus.definition ) )
+      output_file.write( "Accession: {:s}\n".format( locus.accession ) )
+      
+      output_file.write( "///\n" )
+      
 #end with output_file
+
    
 
 
