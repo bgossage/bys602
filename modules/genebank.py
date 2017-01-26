@@ -17,22 +17,41 @@ class  GenBankLocus:
 #
    def __init__( self ):
       
-      m_definition = str()
+      self.definition = str()
+      
+      self.accession = str()
 
-      m_authors = str()
+      self.authors = str()
 
    # end constructor ~~~~~~~~~~~~~~~~~~~~~~~~
+   
+   def __str__( self ):
+      
+      return "Locus\n Definition: {:s}\n Accession: {:s}\n".format(self.definition, self.accession)
+      
+   #end str ~~~~~~~~~~~~~~~~~~~~~~~~
 
 #end class GenBankLocus
 
-def handle_definition( record, output=sys.stdout ):
-   
-   loc = record.rfind( "DEFINITION" )
-   
-   data = record[loc+12:]
 
-   output.write( "Definition: {:s}".format( data ) )
-      
+def handle_definition( record, locus ):
+
+   loc = record.find( "DEFINITION" )
+
+   data = record[loc+12 : len(record)-1]
+
+   locus.definition = data
+
+#end handle_definition() ~~~~~~~~~~~~~~~~~~~~~~~~
+
+def handle_accession( record, locus ):
+
+   loc = record.find( "ACCESSION" )
+
+   data = record[loc+12 : len(record)-1]
+
+   locus.accession = data
+
 #end handle_definition() ~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -52,24 +71,28 @@ class GenBankParser:
                          "//"
                       }
 
-      self.handlers = { "DEFINITION" : handle_definition }
-      
+      self.handlers = dict()
+
+      self.handlers["DEFINITION"] = handle_definition
+      self.handlers["ACCESSION"] = handle_accession
+
       self.filtered = { }
 
    # end constructor ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   
+
    def set_filtered( self, filter_set ):
-   
+
       self.filtered = filter_set
-   
+
    #end set_filtered ~~~~~~~~~~~~~~~~~~~~
 
-   def parse( self, filename, output=sys.stdout ):
+   def parse( self, filename, loci ):
 
       reading_record = False
       key = ""
       read_key = ""
       content = ""
+      locus = 0
 
       #
       # Open the input file and cleanly handle exceptions.
@@ -79,7 +102,8 @@ class GenBankParser:
          for line in genbank_file:
 
             if line.startswith( "LOCUS" ):
-               output.write( "======== START RECORD =============================\n" )
+               locus = GenBankLocus()
+               loci.append(locus)
 
             tokens = line.split()
 
@@ -97,7 +121,7 @@ class GenBankParser:
 
                # Process the record content...
                   if read_key in self.handlers:
-                     self.handlers[read_key]( content, output )
+                     self.handlers[read_key]( content, locus )
 
                # Clear the content string...
                   content = ""
@@ -118,14 +142,16 @@ class GenBankParser:
                # We've reached the beginning of a record... 
                   reading_record = True
                   read_key = key
+
                # Add the current line to the record content...
                   content += line
             #end if
 
          # If we encounter the end of a locus,
             if key == "//":
-            # Print an empty line...
-               output.write( "======== END RECORD =============================\n\n" )
+
+               loci.append( locus )
+
             #end if
 
          # end for line
