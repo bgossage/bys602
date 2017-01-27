@@ -26,7 +26,7 @@ if( len(sys.argv) > 1 ):
    
 parser = genebank.GenBankParser()
 
-filter_keys = { "DEFINITION", "ACCESSION" }
+filter_keys = { "DEFINITION", "ACCESSION", "AUTHORS", "CDS", "gene" }
 
 parser.set_filtered( filter_keys )
 
@@ -44,6 +44,9 @@ with open( "seq_parse.txt", "w" ) as output_file:
       
       output_file.write( "Definition: {:s}\n".format( locus.definition ) )
       output_file.write( "Accession: {:s}\n".format( locus.accession ) )
+      output_file.write( "Authors: {:s}\n".format( locus.authors ) )
+      output_file.write( "CDS start and stop locations: {:d} to {:d}\n".format(locus.cds_location[0],locus.cds_location[1]) )
+      output_file.write( "Gene start and stop locations: {:d} to {:d}\n".format(locus.cds_location[0],locus.cds_location[1]) )
       
       output_file.write( "///\n" )
       

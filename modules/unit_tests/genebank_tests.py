@@ -28,7 +28,7 @@ class GeneBank_tests( unittest.TestCase ):
       
       parser = genebank.GenBankParser()
       
-      filter_keys = { "DEFINITION", "ACCESSION" }
+      filter_keys = { "DEFINITION", "ACCESSION", "AUTHORS", "CDS", "gene" }
 
       parser.set_filtered( filter_keys )
 
@@ -36,10 +36,23 @@ class GeneBank_tests( unittest.TestCase ):
       
       parser.parse( "invicta_small.gb", loci )
 
+      for locus in loci:
+         print locus
 
       self.assertEqual( loci[0].definition, "Solenopsis invicta venom allergen 3 (LOC105199703), mRNA." )
       self.assertEqual( loci[0].accession, "NM_001304591 XM_011166905" )
-
+      self.assertEqual( loci[0].authors, "Schmidt M, McConnell TJ and Hoffman DR." )
+      self.assertEqual( loci[0].cds_location[0], 1 )
+      self.assertEqual( loci[0].cds_location[1], 705 )
+      
+      self.assertEqual( loci[1].definition, "Solenopsis invicta queen venom protein Sol i IV precursor, mRNA,\n\
+            partial cds." )
+      self.assertEqual( loci[1].accession, "AY963564" )
+      self.assertEqual( loci[1].authors, "Deslippe,R.J., HaghiPour-Peasley,J.D., San Francisco,M.J., Fokar,M.\n\
+            and Renthal,R.D." )
+      self.assertEqual( loci[1].cds_location[0], 1 )
+      self.assertEqual( loci[1].cds_location[1], 408 )
+      
    #end test_parse ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
