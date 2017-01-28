@@ -8,15 +8,24 @@
 # 
 #
 
-import sys
+"""@package genebank
+A module for parsing and storing GenBank data.
 
+"""
+
+import sys
+import re
+
+##
+# A GenBank locus record
+#
 class  GenBankLocus:
 
-#
+##
 # Constructor.
 #
    def __init__( self ):
-      
+
       self.definition = str()
       
       self.accession = str()
@@ -29,8 +38,10 @@ class  GenBankLocus:
 
    # end constructor ~~~~~~~~~~~~~~~~~~~~~~~~
    
+## Conversion to string for printing.
+#
    def __str__( self ):
-      
+  
       ans = "Locus\n Definition: {:s}\n".format(self.definition, self.accession)
       ans += " Accession: {:s}\n".format(self.accession)
       ans += " Authors: {:s}\n".format(self.authors)
@@ -43,6 +54,11 @@ class  GenBankLocus:
 
 #end class GenBankLocus
 
+## Extract content from a GenBank Record
+#
+# @param key the record key e.g. AUTHORS
+# @param record the record content lines
+#
 def extract_content( key, record ):
    
    loc = record.find( key )
