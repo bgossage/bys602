@@ -27,10 +27,6 @@ class GeneBank_tests( unittest.TestCase ):
    def test_parse( self ):
       
       parser = genebank.GenBankParser()
-      
-      filter_keys = { "DEFINITION", "ACCESSION", "AUTHORS", "CDS", "gene" }
-
-      parser.set_filtered( filter_keys )
 
       loci = []
       
@@ -52,6 +48,7 @@ class GeneBank_tests( unittest.TestCase ):
             and Renthal,R.D." )
       self.assertEqual( loci[1].cds_location[0], 1 )
       self.assertEqual( loci[1].cds_location[1], 408 )
+      self.assertEqual( loci[1].origin[0], 'a' )
       
    #end test_parse ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

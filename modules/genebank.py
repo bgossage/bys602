@@ -15,6 +15,7 @@ A module for parsing and storing GenBank data.
 
 import sys
 import re
+import string
 
 ##
 # A GenBank locus record
@@ -22,7 +23,7 @@ import re
 class  GenBankLocus:
 
 ##
-# Constructor.
+## Constructor.
 #
    def __init__( self ):
 
@@ -35,18 +36,21 @@ class  GenBankLocus:
       self.cds_location = 0,0
       
       self.gene_location = 0,0
+      
+      self.origin = str()
 
    # end constructor ~~~~~~~~~~~~~~~~~~~~~~~~
    
 ## Conversion to string for printing.
-#
+##
    def __str__( self ):
   
-      ans = "Locus\n Definition: {:s}\n".format(self.definition, self.accession)
+      ans = "Locus\n Definition: {:s}\n".format(self.definition)
       ans += " Accession: {:s}\n".format(self.accession)
       ans += " Authors: {:s}\n".format(self.authors)
       ans += " CDS location: {:d}..{:d}\n".format(self.cds_location[0],self.cds_location[1])
       ans += " Gene location: {:d}..{:d}\n".format(self.gene_location[0],self.gene_location[1])
+      ans += " Origin: {:s}\n".format(self.origin)
       
       return ans
       
@@ -55,202 +59,173 @@ class  GenBankLocus:
 #end class GenBankLocus
 
 ## Extract content from a GenBank Record
-#
-# @param key the record key e.g. AUTHORS
-# @param record the record content lines
-#
-def extract_content( key, record ):
-   
-   loc = record.find( key )
+##
+## @param key the record key e.g. AUTHORS
+## @param next_key the following key
+## @param data the record content lines
+##
+def extract_content( key, next_key, data ):
 
-   data = record[loc+len(key) : ]
+   regex = ".*"        # Skip everything up to the key
+   regex += key        # Match the key
+   regex += r"\s*"     # Skip white space
+   regex += r"(.*?)"   # Capture group 1: characters up to the next key and don't be greedy
+   regex += next_key
 
-   return data.strip()
+   pattern = re.compile( regex,
+                         re.DOTALL # Include line feeds.
+                       )
+
+   loc = pattern.match( data )
+
+   if None == loc:
+      print "No Key: ", key
+      return ""
+
+   content = loc.group(1).strip()
+
+   content.rstrip("\n")
+
+   return content
 
 #end extract_content ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def extract_range( data ):
+def extract_range( key, data ):
 
-   if (data.find( "join" ) >= 0) or (data.find( "complement" ) >= 0) :
-      pair = 0,0
-      return pair
+   regex = ".*"       # Skip everything up to the key
+   regex += key       # Match the key
+   regex += r"\s*"    # Skip white space
+   regex += r"<?"     # Match optional '<'
+   regex += r"(\d+)"  # Capture group 1: one more digits
+   regex += r"..>?"   # Elipsis with optional '>'
+   regex += r"(\d+)"  # Capture group 2: one more digits
 
-   end = data.find("\n")
+   pattern = re.compile( regex,
+                         re.DOTALL # Include line feeds.
+                       )
 
-   begin = 0
-   if data[0] == "<":
-      begin += 1
-
-   loc = data[begin:end]
-
-   elip = loc.find("..")
+   loc = pattern.match( data )
    
-   if( elip < 0 ):
+   if None == loc:
+      print "No range ", key
       pair = 0,0
       return pair
-
-   start = int(loc[0:elip])
-
-   if loc[elip+2] == ">":
-      elip += 1
-
-   stop =  int(loc[elip+2:])
+   
+   start = int(loc.group(1))
+   stop =  int(loc.group(2))
 
    pair = start, stop
    
    return pair
-
+   
 #end extract_range ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-def handle_definition( record, locus ):
+def parse_definition( record, locus ):
 
-   data = extract_content( "DEFINITION", record )
+   data = extract_content( "DEFINITION", "ACCESSION", record )
 
    locus.definition = data
 
-#end handle_definition() ~~~~~~~~~~~~~~~~~~~~~~~~
+#end parse_definition() ~~~~~~~~~~~~~~~~~~~~~~~~
 
-def handle_accession( record, locus ):
+def parse_accession( record, locus ):
 
-   data = extract_content( "ACCESSION", record )
+   data = extract_content( "ACCESSION", "VERSION", record )
 
    locus.accession = data
 
-#end handle_accession() ~~~~~~~~~~~~~~~~~~~~~~~~
+#end parse_accession() ~~~~~~~~~~~~~~~~~~~~~~~~
 
-def handle_authors( record, locus ):
+def parse_authors( record, locus ):
 
-   data = extract_content( "AUTHORS", record )
+   data = extract_content( "AUTHORS", "TITLE", record )
 
    locus.authors = data
 
-#end handle_authors() ~~~~~~~~~~~~~~~~~~~~~~~~
+#end parse_authors() ~~~~~~~~~~~~~~~~~~~~~~~~
 
-def handle_cds( record, locus ):
+def parse_cds( record, locus ):
 
-   data = extract_content( "CDS", record )
+   locus.cds_location = extract_range( "CDS", record )
 
-   locus.cds_location = extract_range( data )
+#end parse_cds() ~~~~~~~~~~~~~~~~~~~~~~~~
 
-#end handle_cds() ~~~~~~~~~~~~~~~~~~~~~~~~
+def parse_gene( record, locus ):
 
-def handle_gene( record, locus ):
+   locus.gene_location = extract_range( "gene", record )
 
-   data = extract_content( "gene", record )
+#end parse_gene() ~~~~~~~~~~~~~~~~~~~~~~~~
 
-   locus.gene_location = extract_range( data )
+def parse_origin( record, locus ):
 
-#end handle_gene() ~~~~~~~~~~~~~~~~~~~~~~~~
+   pattern = re.compile( r"([gatc]+)" )
+
+   seqs = pattern.findall( record )
+
+   if None == seqs:
+      return str()
+   
+   locus.origin = string.join( seqs, "" )
+
+#end parse_origin() ~~~~~~~~~~~~~~~~~~~~~~~~
+
+def parse_locus( record, locus ):
+
+   print record
+
+   parse_origin( record, locus )
+
+   parse_definition( record, locus )
+
+   parse_accession( record, locus )
+
+   parse_authors( record, locus )
+
+   parse_cds( record, locus )
+
+   parse_gene( record, locus )
+
+   print locus
+
+#end parse_locus() ~~~~~~~~~~~~~~~~~~~~~~~~
 
 class GenBankParser:
-   
-#
-# Constructor.
-#
-   def __init__( self ):
 
-      self.keywords = {
-                         "DEFINITION", "AUTHORS", "ACCESSION",
-                         "TITLE", "REFERENCE", "FEATURES", "ORIGIN",
-                         "LOCUS", "JOURNAL", "ORGANISM", "VERSION",
-                         "KEYWORDS", "source", "gene", "CDS", 
-                         "sig_peptide", "mat_peptide" 
-                         "//"
-                      }
 
-      self.handlers = dict()
-
-      self.handlers["DEFINITION"] = handle_definition
-      self.handlers["ACCESSION"] = handle_accession
-      self.handlers["AUTHORS"] = handle_authors
-      self.handlers["CDS"] = handle_cds
-      self.handlers["gene"] = handle_gene
-
-      self.filtered = { }
-
-   # end constructor ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-   def set_filtered( self, filter_set ):
-
-      self.filtered = filter_set
-
-   #end set_filtered ~~~~~~~~~~~~~~~~~~~~
-
+## Parse and store a GenBank data file.
+##
    def parse( self, filename, loci ):
 
-      reading_record = False
-      key = ""
-      read_key = ""
       content = ""
       locus = 0
-      ignore = False # Ignore text where keywords should not be read e.g. comments
 
    #
    # Open the input file and cleanly handle exceptions.
    #
       with open( filename, "r" ) as genbank_file:
-
+         
          for line in genbank_file:
 
             if line.startswith( "LOCUS" ):
                locus = GenBankLocus()
-               
-         # Ignore words that occur within comments...
-            if line.count( "\"" ) % 2 == 1:
-                ignore = not ignore
 
-            tokens = line.split()
-
-            if not tokens:
-               continue
-
-            key = tokens[0]
-
-
-         # If we are reading a record for a given key...
-            if reading_record :
-            # And we encounter any keyword..
-               if key in self.keywords and not ignore:
-               # We've reached the end of the record...
-                  reading_record = False
-
-               # Process the record content...
-                  if read_key in self.handlers:
-                     self.handlers[read_key]( content, locus )
-
-               # Clear the content string...
-                  content = ""
-               #end if key
-            # end if reading
-
-            # Otherwise, add the current line to the record content...
-               else:
-                  content += line
-
-            #end if
-
-         # If we are not reading a record...
-            if not reading_record:
-
-            # And if we encounter a key to be read...
-               if key in self.filtered:
-               # We've reached the beginning of a record... 
-                  reading_record = True
-                  read_key = key
-
-               # Add the current line to the record content...
-                  content += line
-            #end if
+            content += line
 
          # If we encounter the end of a locus,
-            if key == "//":
+            if line.startswith("//") :
+            # Parse the locus data...
+               parse_locus( content, locus )
+
             # Add the current locus to the list...
                loci.append( locus )
 
+            # Clear the content string...
+               content = ""
+
             #end if
 
-         # end for line
+         # end while line
 
       # end with genbank_file
 
@@ -258,31 +233,5 @@ class GenBankParser:
 
 #end class GenBankParser
 
-
-class GenBankRecordHandler:
-   
-#
-# Constructor.
-#
-   def __init__( self, line ):
-      
-      tokens = line.split()
-
-      self.key = tokens[0]
-
-      self.content = line[ len(key):len(line)-1 ]
-
-   # end constructor ~~~~~~~~~~~~~~~~~~~~~~~~
-   
-   
-   def handle( self, line ):
-   
-      self.content += line
- 
-   # end handle
-   
-   
-   
-#end class GenBankRecordHandler
 
 ## EOF
