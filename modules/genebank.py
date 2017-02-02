@@ -107,7 +107,7 @@ def extract_range( key, data ):
    loc = pattern.match( data )
    
    if None == loc:
-      print "No range ", key
+      print "No range for key: ", key
       pair = 0,0
       return pair
    
@@ -172,8 +172,6 @@ def parse_origin( record, locus ):
 
 def parse_locus( record, locus ):
 
-   print record
-
    parse_origin( record, locus )
 
    parse_definition( record, locus )
@@ -185,8 +183,6 @@ def parse_locus( record, locus ):
    parse_cds( record, locus )
 
    parse_gene( record, locus )
-
-   print locus
 
 #end parse_locus() ~~~~~~~~~~~~~~~~~~~~~~~~
 
