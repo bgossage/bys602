@@ -40,6 +40,10 @@ class GeneBank_tests( unittest.TestCase ):
       self.assertEqual( loci[0].authors, "Schmidt M, McConnell TJ and Hoffman DR." )
       self.assertEqual( loci[0].cds_location[0], 1 )
       self.assertEqual( loci[0].cds_location[1], 705 )
+      self.assertEqual( len(loci[0].origin), 705 )
+      self.assertEqual( loci[0].origin[0], 'a' )
+      self.assertEqual( loci[0].origin[704], 'g' )
+      self.assertEqual( loci[0].origin[694], 't' )
       
       self.assertEqual( loci[1].definition, "Solenopsis invicta queen venom protein Sol i IV precursor, mRNA,\n\
             partial cds." )
@@ -48,7 +52,10 @@ class GeneBank_tests( unittest.TestCase ):
             and Renthal,R.D." )
       self.assertEqual( loci[1].cds_location[0], 1 )
       self.assertEqual( loci[1].cds_location[1], 408 )
+      self.assertEqual( len(loci[1].origin), 408 )
       self.assertEqual( loci[1].origin[0], 'a' )
+      self.assertEqual( loci[1].origin[407], 'a' )
+      self.assertEqual( loci[1].origin[396], 't' )
       
    #end test_parse ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

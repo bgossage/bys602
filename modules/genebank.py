@@ -58,11 +58,13 @@ class  GenBankLocus:
 
 #end class GenBankLocus
 
-## Extract content from a GenBank Record
+## Extract content for a given key from a GenBank record
 ##
 ## @param key the record key e.g. AUTHORS
 ## @param next_key the following key
 ## @param data the record content lines
+##
+## @return a string containing the content for the key
 ##
 def extract_content( key, next_key, data ):
 
@@ -90,6 +92,14 @@ def extract_content( key, next_key, data ):
 
 #end extract_content ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+## Extract a range string for a given key from a GenBank record
+##
+## @param key the record key e.g. AUTHORS
+## @param next_key the following key
+## @param data the record content lines
+##
+## @return a string containing the content for the key
+##
 def extract_range( key, data ):
 
    regex = ".*"       # Skip everything up to the key
@@ -123,7 +133,7 @@ def extract_range( key, data ):
 
 def parse_definition( record, locus ):
 
-   data = extract_content( "DEFINITION", "ACCESSION", record )
+   data = extract_content( key="DEFINITION", next_key="ACCESSION", data=record )
 
    locus.definition = data
 
@@ -131,7 +141,7 @@ def parse_definition( record, locus ):
 
 def parse_accession( record, locus ):
 
-   data = extract_content( "ACCESSION", "VERSION", record )
+   data = extract_content( key="ACCESSION", next_key="VERSION", data=record )
 
    locus.accession = data
 
@@ -139,7 +149,7 @@ def parse_accession( record, locus ):
 
 def parse_authors( record, locus ):
 
-   data = extract_content( "AUTHORS", "TITLE", record )
+   data = extract_content( key="AUTHORS", next_key="TITLE", data=record )
 
    locus.authors = data
 
@@ -147,19 +157,19 @@ def parse_authors( record, locus ):
 
 def parse_cds( record, locus ):
 
-   locus.cds_location = extract_range( "CDS", record )
+   locus.cds_location = extract_range( key="CDS", data=record )
 
 #end parse_cds() ~~~~~~~~~~~~~~~~~~~~~~~~
 
 def parse_gene( record, locus ):
 
-   locus.gene_location = extract_range( "gene", record )
+   locus.gene_location = extract_range( key="gene", data=record )
 
 #end parse_gene() ~~~~~~~~~~~~~~~~~~~~~~~~
 
 def parse_origin( record, locus ):
 
-   pattern = re.compile( r"([gatc]+)" )
+   pattern = re.compile( r"(\b[gatc]+\b)", re.DOTALL )
 
    seqs = pattern.findall( record )
 
@@ -170,6 +180,8 @@ def parse_origin( record, locus ):
 
 #end parse_origin() ~~~~~~~~~~~~~~~~~~~~~~~~
 
+## Parse a record and store it in a locus object
+##
 def parse_locus( record, locus ):
 
    parse_origin( record, locus )
@@ -221,7 +233,7 @@ class GenBankParser:
 
             #end if
 
-         # end while line
+         # end for line
 
       # end with genbank_file
 
