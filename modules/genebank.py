@@ -62,7 +62,7 @@ class  GenBankLocus:
 ##
 ## @param key the record key e.g. AUTHORS
 ## @param next_key the following key
-## @param data the record content lines
+## @param data the locus record content lines
 ##
 ## @return a string containing the content for the key
 ##
@@ -94,11 +94,10 @@ def extract_content( key, next_key, data ):
 
 ## Extract a range string for a given key from a GenBank record
 ##
-## @param key the record key e.g. AUTHORS
-## @param next_key the following key
-## @param data the record content lines
+## @param key the rance key e.g. CDS
+## @param data the locus record content lines
 ##
-## @return a string containing the content for the key
+## @return a pair of integers defining the range
 ##
 def extract_range( key, data ):
 

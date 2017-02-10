@@ -35,6 +35,8 @@ class GeneAlign_tests( unittest.TestCase ):
       
       scoreMatrix = genalign.ScoringMatrix( substMatrix, seq1, seq2 )
       
+      scoreMatrix.backtrace( seq1, seq2 )
+      
       print scoreMatrix.score_matrix
       print scoreMatrix.arrow
 
