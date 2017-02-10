@@ -14,9 +14,6 @@ A module for computing sequence alignments.
 
 """
 
-import sys
-import re
-import string
 import numpy
 
 ##
@@ -34,6 +31,15 @@ class  SubstitutionMatrix:
       self.indexMap = "ARNDCQEGHILKMFPSTWYV"
 
    # end constructor ~~~~~~~~~~~~~~~~~~~~~~~~
+
+   def compare( self, aa1, aa2 ):
+
+      n1 = self.indexMap.index( aa1 )
+      n2 = self.indexMap.index( aa2 )
+
+      return self.matrix[n1,n2]
+
+   #endif compare ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
 ## Conversion to string for printing.
 ##
@@ -72,17 +78,52 @@ class  ScoringMatrix:
       
    # Fill the first row of the arrow array...
       self.arrow[0] = numpy.ones(length2)
+      
+      f = numpy.zeros(3)
 
+   # 
+      for i in range(1,length1):
+         for j in range(1,length2):
+            
+            f[0] = self.score_matrix[i-1,j] + gapPenalty
+            f[1] = self.score_matrix[i,j-1] + gapPenalty
+            f[2] = self.score_matrix[i,j-1] + substMatrix.compare(seq1[i-1],seq2[j-1])
+
+            self.score_matrix[i,j] = f.max()
+
+            self.arrow[i,j] = f.argmax()
+            
+         #end for j
+      #end for i
+      
    # end constructor ~~~~~~~~~~~~~~~~~~~~~~~~
+   
+   def backtrace( self, seq1, seq2 ):
+   
+      str1, str2 = "", "" # The resulting alignment as a pair of strings
+      
+      v,h = self.arrow.shape
+      
+      ok = True
+      v -= 1
+      h -= 1
+      
+   #   while ok:
+         
+         
+      #end while
+   
+   #end backtrace() ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   
    
 ## Conversion to string for printing.
 ##
    def __str__( self ):
-  
+
       ans = str()
-      
+
       return ans
-      
+
    #end str ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #end class ScoringMatrix
