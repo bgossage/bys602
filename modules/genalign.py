@@ -104,14 +104,25 @@ class  ScoringMatrix:
       
       v,h = self.arrow.shape
       
-      ok = True
+      ok = 1
       v -= 1
       h -= 1
+
+      v,h = self.arrow.shape
       
-   #   while ok:
+      while ok:
+         direction = self.arrow[v,h]
+         if( direction == 0: # left
+            str1 += seq1[v-1]
+            str2 += "_"
+            v =- 1
+         elif direction == 1: # up
+            str1 = "_"
+            str2 = seq2[h-1]
+            h -= 1
+         elif self.arrow[v,h] == 2 # diagonal
          
-         
-      #end while
+      end while
    
    #end backtrace() ~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
