@@ -24,9 +24,13 @@ class  SubstitutionMatrix:
 ##
 ## Constructor.
 #
-   def __init__( self ):
+   def __init__( self, match, not_match ):
 
-      self.matrix = numpy.identity(20,float)
+      self.matrix = numpy.ndarray( (20,20),float)
+      
+      self.matrix.fill( not_match )
+      
+      numpy.fill_diagonal( self.matrix, match )
       
       self.indexMap = "ARNDCQEGHILKMFPSTWYV"
 
@@ -61,7 +65,7 @@ class  ScoringMatrix:
 ##
 ## Constructor.
 #
-   def __init__( self, substMatrix, seq1, seq2, gapPenalty=2.0 ):
+   def __init__( self, substMatrix, seq1, seq2, gapPenalty=-2.0 ):
       
       length1 = len(seq1) + 1
       length2 = len(seq2) + 1
@@ -84,10 +88,12 @@ class  ScoringMatrix:
    # 
       for i in range(1,length1):
          for j in range(1,length2):
-            
+             
+            prob = substMatrix.compare(seq1[i-1],seq2[j-1])  
+              
             f[0] = self.score_matrix[i-1,j] + gapPenalty
             f[1] = self.score_matrix[i,j-1] + gapPenalty
-            f[2] = self.score_matrix[i,j-1] + substMatrix.compare(seq1[i-1],seq2[j-1])
+            f[2] = self.score_matrix[i-1,j-1] + prob
 
             self.score_matrix[i,j] = f.max()
 
@@ -107,12 +113,11 @@ class  ScoringMatrix:
       ok = 1
       v -= 1
       h -= 1
-
-      v,h = self.arrow.shape
       
       while ok:
          direction = self.arrow[v,h]
-         if( direction == 0: # left
+
+         if direction == 0: # left
             str1 += seq1[v-1]
             str2 += "_"
             v =- 1
@@ -120,9 +125,20 @@ class  ScoringMatrix:
             str1 = "_"
             str2 = seq2[h-1]
             h -= 1
-         elif self.arrow[v,h] == 2 # diagonal
-         
-      end while
+         elif self.arrow[v,h] == 2: # diagonal
+            str1 += seq1[v-1]
+            str2 += seq2[h-1]
+            v -= 1
+            h -= 1
+
+         if v == 0 and h == 0:
+             ok = 0
+      # end while
+   #reverse the strings...
+      str1 = str1[::-1]
+      str2 = str2[::-1]
+      
+      return str1, str2
    
    #end backtrace() ~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
