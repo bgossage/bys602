@@ -16,8 +16,7 @@ sys.path.append( ".." )
 
 import unittest
 import genebank
-import numpy
-import math
+
 
 class GeneBank_tests( unittest.TestCase ):
 
