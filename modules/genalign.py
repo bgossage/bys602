@@ -15,16 +15,19 @@ A module for computing sequence alignments.
 """
 
 import numpy
+import string
 
 ##
-# 
+# A substituion matrix class
 #
 class  SubstitutionMatrix:
 
 ##
 ## Constructor.
+# @param match the match score
+# @param not_match the mismatch score
 #
-   def __init__( self, match, not_match ):
+   def __init__( self, match=1.0, not_match=0.0 ):
 
       self.matrix = numpy.ndarray( (20,20),float)
       
@@ -36,6 +39,52 @@ class  SubstitutionMatrix:
 
    # end constructor ~~~~~~~~~~~~~~~~~~~~~~~~
 
+   ##
+   # Read a substitution matrix from a file.
+   # @param filename the name of the input file.
+   #
+   def readFrom( self, filename ):
+   #
+   # Open the input file and cleanly handle exceptions...
+   #
+      with open( filename, "r" ) as file:
+         
+         header_read = False
+         size = 0
+         row = 0         
+         
+         for line in file:
+
+         # Skip comments...
+             if line.startswith("#"): continue
+                 
+             line = line.strip()
+             tokens = line.split()
+             
+         # Skip empty lines...
+             if not tokens: continue
+                 
+         # Look for the index map row...
+             if not header_read:
+                 self.indexMap = string.join( tokens, "" )
+                 size = len(self.indexMap)
+                 self.matrix = numpy.ndarray( (size,size ),float )
+                 header_read = True
+             else:
+             # Store current row data from the line values...
+                 for i in range(0,size):
+                     self.matrix[row,i] = float(tokens[i+1])
+                 row += 1
+         #end for   
+          
+      #end with
+    
+   #end readFrom ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   ##
+   # Lookup the substitution likelihood parameter for a given 
+   # pair of sequence elements
+   #
    def compare( self, aa1, aa2 ):
 
       n1 = self.indexMap.index( aa1 )
@@ -58,15 +107,17 @@ class  SubstitutionMatrix:
 #end class SubstitutionMatrix
 
 ##
-# .
+# A scoring matrix using the Needleman-Wunseh method.
 #
 class  ScoringMatrix:
-
+# A sequence alignment scoring matrix.
 ##
 ## Constructor.
 #
    def __init__( self, substMatrix, seq1, seq2, gapPenalty=-2.0 ):
-      
+   ##
+   # Create a scoring matrix using the Needleman-Wunseh method.
+   #
       length1 = len(seq1) + 1
       length2 = len(seq2) + 1
       
@@ -104,8 +155,9 @@ class  ScoringMatrix:
       
    # end constructor ~~~~~~~~~~~~~~~~~~~~~~~~
    
+
    def backtrace( self, seq1, seq2 ):
-   
+   ## Backtrace this scoring matrix to align the given sequences.
       str1, str2 = "", "" # The resulting alignment as a pair of strings
       
       v,h = self.arrow.shape
@@ -114,26 +166,29 @@ class  ScoringMatrix:
       v -= 1
       h -= 1
       
+      print h,v      
+      
       while ok:
          direction = self.arrow[v,h]
 
          if direction == 0: # left
             str1 += seq1[v-1]
             str2 += "_"
-            v =- 1
+            v -= 1
          elif direction == 1: # up
-            str1 = "_"
-            str2 = seq2[h-1]
+            str1 += "_"
+            str2 += seq2[h-1]
             h -= 1
-         elif self.arrow[v,h] == 2: # diagonal
+         elif direction == 2: # diagonal
             str1 += seq1[v-1]
             str2 += seq2[h-1]
             v -= 1
             h -= 1
-
-         if v == 0 and h == 0:
+         if v <= 0 or h <= 0:
              ok = 0
+             
       # end while
+             
    #reverse the strings...
       str1 = str1[::-1]
       str2 = str2[::-1]
