@@ -18,24 +18,26 @@ import numpy
 import string
 
 ##
-# A substituion matrix class
+# A Similarity matrix class
 #
-class  SubstitutionMatrix:
+class  SimilarityMatrix:
 
 ##
 ## Constructor.
 # @param match the match score
 # @param not_match the mismatch score
 #
-   def __init__( self, match=1.0, not_match=0.0 ):
+   def __init__( self, match=1.0, mismatch=0.0, indexMap="ARNDCQEGHILKMFPSTWYV" ):
 
-      self.matrix = numpy.ndarray( (20,20),float)
+      size = len(indexMap)
+
+      self.matrix = numpy.ndarray( (size,size),float)
       
-      self.matrix.fill( not_match )
+      self.matrix.fill( mismatch )
       
       numpy.fill_diagonal( self.matrix, match )
       
-      self.indexMap = "ARNDCQEGHILKMFPSTWYV"
+      self.indexMap = indexMap
 
    # end constructor ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -85,7 +87,7 @@ class  SubstitutionMatrix:
    # Lookup the substitution likelihood parameter for a given 
    # pair of sequence elements
    #
-   def compare( self, aa1, aa2 ):
+   def similarity( self, aa1, aa2 ):
 
       n1 = self.indexMap.index( aa1 )
       n2 = self.indexMap.index( aa2 )
@@ -104,7 +106,7 @@ class  SubstitutionMatrix:
       
    #end str ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#end class SubstitutionMatrix
+#end class SimilarityMatrix
 
 ##
 # A scoring matrix using the Needleman-Wunseh method.
@@ -114,9 +116,9 @@ class  ScoringMatrix:
 ##
 ## Constructor.
 #
-   def __init__( self, substMatrix, seq1, seq2, gapPenalty=-2.0 ):
+   def __init__( self, similarityMatrix, seq1, seq2, gapPenalty=-2.0 ):
    ##
-   # Create a scoring matrix using the Needleman-Wunseh method.
+   # Create a scoring matrix using the Needleman-Wunsch method.
    #
       length1 = len(seq1) + 1
       length2 = len(seq2) + 1
@@ -140,7 +142,7 @@ class  ScoringMatrix:
       for i in range(1,length1):
          for j in range(1,length2):
              
-            prob = substMatrix.compare(seq1[i-1],seq2[j-1])  
+            prob = similarityMatrix.similarity(seq1[i-1],seq2[j-1])  
               
             f[0] = self.score_matrix[i-1,j] + gapPenalty
             f[1] = self.score_matrix[i,j-1] + gapPenalty
@@ -165,9 +167,7 @@ class  ScoringMatrix:
       ok = 1
       v -= 1
       h -= 1
-      
-      print h,v      
-      
+       
       while ok:
          direction = self.arrow[v,h]
 
