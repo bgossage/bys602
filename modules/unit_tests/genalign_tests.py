@@ -25,16 +25,16 @@ class GeneAlign_tests( unittest.TestCase ):
    """
    def test_sequence_align( self ):
               
-      seq1 = "CGCA"  
-      seq2 = "CACGCAT"   
+      seq1 = "GCATGCU"  
+      seq2 = "GATTACA"   
       
       match = 1.0
-      not_match = 0.0
+      mismatch = -1.0
       gap_penalty = -1.0
               
-      substMatrix = genalign.SubstitutionMatrix(match,not_match)
+      similarityMatrix = genalign.SimilarityMatrix(match,mismatch,"GCTAU")
       
-      scoreMatrix = genalign.ScoringMatrix( substMatrix, seq1, seq2, gap_penalty )
+      scoreMatrix = genalign.ScoringMatrix( similarityMatrix, seq1, seq2, gap_penalty )
 
       #print scoreMatrix.score_matrix
       #print scoreMatrix.arrow
@@ -43,31 +43,32 @@ class GeneAlign_tests( unittest.TestCase ):
       
       aligned_seq1, aligned_seq2 = scoreMatrix.backtrace( seq1, seq2 )
       
-      print seq1
-      print seq2
-      print aligned_seq1
-      print aligned_seq2
+      print "Seq1: ", seq1
+      print "Seq2: ", seq2
+      print "Aligned Seq1: ", aligned_seq1
+      print "Aligned Seq2: ", aligned_seq2
+      
+      self.assertEqual( aligned_seq1, "GCATG_CU" )
+      self.assertEqual( aligned_seq2, "G_ATTACA" )
       
    #/////////////////////////////   
       seq1 = "IQIFSFIFRQEWNDA"  
       seq2 = "QIFFFFRMSVEWND" 
       
-      substMatrix.readFrom( "JN_blosom50.txt" )
+      similarityMatrix.readFrom( "JN_blosom50.txt" )
       
-      scoreMatrix = genalign.ScoringMatrix( substMatrix, seq1, seq2, gap_penalty )
+      scoreMatrix = genalign.ScoringMatrix( similarityMatrix, seq1, seq2, gap_penalty )
       
       #print scoreMatrix.score_matrix
       #print scoreMatrix.arrow
       
       aligned_seq1, aligned_seq2 = scoreMatrix.backtrace( seq1, seq2 )
 
-      print seq1
-      print seq2
-      print aligned_seq1
-      print aligned_seq2
+      print "Seq1: ", seq1
+      print "Seq2: ", seq2
+      print "Aligned Seq1: ", aligned_seq1
+      print "Aligned Seq2: ", aligned_seq2
 
-     # self.assertEqual( loci[0].definition, "Solenopsis invicta venom allergen 3 (LOC105199703), mRNA." )
-      
    #end test_sequence_align ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
    """ 
@@ -75,16 +76,16 @@ class GeneAlign_tests( unittest.TestCase ):
    """
    def test_read_matrix( self ):
        
-       substMatrix = genalign.SubstitutionMatrix()
+       similarityMatrix = genalign.SimilarityMatrix()
        
-       substMatrix.readFrom( "JN_blosom50.txt" )
+       similarityMatrix.readFrom( "JN_blosom50.txt" )
        
-       self.assertEqual( substMatrix.indexMap[0], "A" )
-       self.assertEqual( substMatrix.indexMap[22], "Z" )
+       self.assertEqual( similarityMatrix.indexMap[0], "A" )
+       self.assertEqual( similarityMatrix.indexMap[22], "Z" )
        
-       self.assertEqual( substMatrix.matrix[0,0], 5.0 )
-       self.assertEqual( substMatrix.matrix[22,22], 5.0 )
-       self.assertEqual( substMatrix.matrix[23,23], 1.0 )
+       self.assertEqual( similarityMatrix.matrix[0,0], 5.0 )
+       self.assertEqual( similarityMatrix.matrix[22,22], 5.0 )
+       self.assertEqual( similarityMatrix.matrix[23,23], 1.0 )
        
    #end test_read_matrix ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
