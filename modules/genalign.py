@@ -16,6 +16,7 @@ A module for computing sequence alignments.
 
 import numpy
 import string
+import StringIO
 
 ##
 # A Similarity matrix class
@@ -96,13 +97,18 @@ class  SimilarityMatrix:
 
    #endif compare ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
-## Conversion to string for printing.
+## Convert a SimilarityMatrix to string for printing.
 ##
-   def __str__( self ):
-  
-      ans = str()
+   def writeTo( self, filename ):
+   
+      matrix_str = numpy.array2string( self.matrix )
       
-      return ans
+      with open( filename, "w" ) as file:
+         file.write( "# A similarity matrix\n" )
+         file.write( self.indexMap +"\n" )
+         file.write( matrix_str )
+
+
       
    #end str ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
