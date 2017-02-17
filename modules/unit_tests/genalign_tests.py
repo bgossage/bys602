@@ -88,6 +88,17 @@ class GeneAlign_tests( unittest.TestCase ):
        self.assertEqual( similarityMatrix.matrix[23,23], 1.0 )
        
    #end test_read_matrix ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       
+   def test_write_matrix( self ):
+       
+       match = 1.0
+       mismatch = -1.0
+
+       similarityMatrix = genalign.SimilarityMatrix(match,mismatch,"GCTAU")
+       
+       similarityMatrix.writeTo( "simil.txt" )
+       
+   #end test_write_matrix ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # end class GeneBank_tests
 
