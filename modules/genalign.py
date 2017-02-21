@@ -201,8 +201,15 @@ class  ScoringMatrix:
       
       return str1, str2
    
-   #end backtrace() ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   #end ScoringMatrix.backtrace() ~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
+   def score( self ):
+   
+      rows, cols = self.score_matrix.shape
+      
+      return self.score_matrix[rows-1,cols-1]
+      
+   #end ScoringMatrix.score() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
 ## Conversion to string for printing.
 ##

@@ -36,7 +36,8 @@ class GeneAlign_tests( unittest.TestCase ):
       
       scoreMatrix = genalign.ScoringMatrix( similarityMatrix, seq1, seq2, gap_penalty )
 
-      #print scoreMatrix.score_matrix
+      print scoreMatrix.score_matrix
+      print "score = ", scoreMatrix.score()
       #print scoreMatrix.arrow
            
       scoreMatrix.backtrace( seq1, seq2 )
