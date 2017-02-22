@@ -16,7 +16,45 @@ A module for computing sequence alignments.
 
 import numpy
 import string
-import StringIO
+import termcolor
+import sys
+
+##
+# The alignment of two sequences.
+#
+class Alignment:
+    
+    def __init__( self, seq1, seq2 ):
+        
+        self.name = ""
+        
+        self.seq1 = seq1
+        self.seq2 = seq2
+        self.aligned_seq1 = ""
+        self.aligned_seq2 = ""
+        
+        self.score = 0.0
+        
+        self.colormap = { "c":"black", "_":"red", 2:"green", 3:"yellow", 4:"blue" }
+        
+    def write( self ):
+        print self.aligned_seq1
+        for i in range(0,len(self.aligned_seq2)):
+            char = self.aligned_seq2[i]
+            if char != self.aligned_seq1[i]:
+               sys.stdout.write( termcolor.colored( char, "red" ) )
+            else:
+               sys.stdout.write(char)
+        #end for
+               
+        print
+        
+    #end print ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   #end Alignment.__init__
+        
+#end class Alignment
+        
 
 ##
 # A Similarity matrix class
@@ -166,7 +204,8 @@ class  ScoringMatrix:
 
    def backtrace( self, seq1, seq2 ):
    ## Backtrace this scoring matrix to align the given sequences.
-      str1, str2 = "", "" # The resulting alignment as a pair of strings
+   
+      ans = Alignment( seq1, seq2 ) # The resulting alignments
       
       v,h = self.arrow.shape
       
@@ -178,16 +217,16 @@ class  ScoringMatrix:
          direction = self.arrow[v,h]
 
          if direction == 0: # left
-            str1 += seq1[v-1]
-            str2 += "_"
+            ans.aligned_seq1 += seq1[v-1]
+            ans.aligned_seq2 += "_"
             v -= 1
          elif direction == 1: # up
-            str1 += "_"
-            str2 += seq2[h-1]
+            ans.aligned_seq1 += "_"
+            ans.aligned_seq2 += seq2[h-1]
             h -= 1
          elif direction == 2: # diagonal
-            str1 += seq1[v-1]
-            str2 += seq2[h-1]
+            ans.aligned_seq1 += seq1[v-1]
+            ans.aligned_seq2 += seq2[h-1]
             v -= 1
             h -= 1
          if v <= 0 or h <= 0:
@@ -196,10 +235,10 @@ class  ScoringMatrix:
       # end while
              
    #reverse the strings...
-      str1 = str1[::-1]
-      str2 = str2[::-1]
+      ans.aligned_seq1 = ans.aligned_seq1[::-1]
+      ans.aligned_seq2 = ans.aligned_seq2[::-1]
       
-      return str1, str2
+      return ans
    
    #end ScoringMatrix.backtrace() ~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
@@ -216,7 +255,9 @@ class  ScoringMatrix:
    def __str__( self ):
 
       ans = str()
-
+      
+      ans = numpy.array2string( self.score_matrix )
+      
       return ans
 
    #end str ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
