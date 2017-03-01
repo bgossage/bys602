@@ -116,7 +116,7 @@ def extract_range( key, data ):
    loc = pattern.match( data )
    
    if None == loc:
-      print "No range for key: ", key
+#      print "No range for key: ", key
       pair = 0,0
       return pair
    
@@ -167,17 +167,33 @@ def parse_gene( record, locus ):
 #end parse_gene() ~~~~~~~~~~~~~~~~~~~~~~~~
 
 def parse_origin( record, locus ):
+    
+# Find the end of the ORIGIN key...
+   origin_pattern = re.compile( r"\bORIGIN\b" )
+   origin_match = origin_pattern.search( record )
+   start = origin_match.span()[1]  # start here to find the origin data
 
-   pattern = re.compile( r"(\b[gatc]+\b)", re.DOTALL )
-
-   seqs = pattern.findall( record )
-
-   if None == seqs:
-      return str()
+# The sequence is broken into blocks separated white space and may be nucleotides or amino acids
+# 
+   nucleic_pattern = re.compile( r"(\b[acgturykmswbdhvn-]+\b)", re.IGNORECASE )
    
-   locus.origin = string.join( seqs, "" )
+   amino_pattern = re.compile( r"(\b[ABCDEFHHIKLMNPQRSTUVWYZX*-]+\b)", re.IGNORECASE )
 
-#end parse_origin() ~~~~~~~~~~~~~~~~~~~~~~~~
+# Search for a nucleic sequence...
+   sequence = nucleic_pattern.findall( record, start )
+
+# If that fails, search for a protein sequence...
+   if None == sequence:
+      seqs = amino_pattern.findall( record, start )
+    
+# If both fail just return...
+   if None == sequence:
+       return
+       
+# Join the blocked data into a single string...
+   locus.origin = string.join( sequence, "" )
+
+#end parse_origin() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## Parse a record and store it in a locus object
 ##
@@ -197,8 +213,10 @@ def parse_locus( record, locus ):
 
 #end parse_locus() ~~~~~~~~~~~~~~~~~~~~~~~~
 
+##
+## A parser for GenBack records (loci)
+##
 class GenBankParser:
-
 
 ## Parse and store a GenBank data file.
 ##
@@ -236,9 +254,33 @@ class GenBankParser:
 
       # end with genbank_file
 
-   #end parse ~~~~~~~~~~~~~~~~~~~~~~
+   #end parse ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #end class GenBankParser
 
+def ReadFasta( filename ):
+    
+   with open( filename, "r" ) as fasta_file:
+       
+       lines = []
+       
+       for line in fasta_file:
+           
+           if line.startswith(">"): 
+               continue
+
+       # Replace all whitespace...
+           data = re.sub(r'\s+', '', line)
+               
+           lines.append( data )
+           
+       #end for
+           
+       ans = string.join( lines, "" )
+       
+       return ans
+   #end with   
+    
+#end ReadFasta ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## EOF
