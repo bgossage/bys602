@@ -23,7 +23,7 @@ class GeneBank_tests( unittest.TestCase ):
    """ 
       Test parsing a GenBank file.
    """
-   def test_parse( self ):
+   def test_parse_genbank( self ):
       
       parser = genebank.GenBankParser()
 
@@ -56,8 +56,22 @@ class GeneBank_tests( unittest.TestCase ):
       self.assertEqual( loci[1].origin[407], 'a' )
       self.assertEqual( loci[1].origin[396], 't' )
       
-   #end test_parse ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   #end test_parse_genbank ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+   def test_read_fasta( self ):
+       
+       seq = genebank.ReadFasta( "Pol_d_venom_pre.fasta" )
+       
+       expected = (
+                  "MKISCLICLVIVLTIIHLSQANDYCKIKCSSGVHTVCQYGESTKPSKNCAGKLIKSVGPTEEEKKLIVEE"
+                  "HNRFRQKVAKGLETRGNPGPQPAASNMNNLVWNDELAKIAQVWASQCQILVHDKCRNTEKYQVGQNIAYA"
+                  "GSSNHFPSVTKLIQLWENEVKDFNYNTGITNKNFGKVGHYTQMVWGNTKEVGCGSLKYVEKNMQIHYLIC"
+                  "NYGPAGNYLGQPIYTKK"
+                  )
+                  
+       self.assertEqual( seq, expected )
+       
+   #end test_read_fasta ~~~~~~~~~~~~~~~~~~~~
 
 # end class GeneBank_tests
 
