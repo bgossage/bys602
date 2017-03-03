@@ -25,8 +25,8 @@ class GeneAlign_tests( unittest.TestCase ):
    """
    def test_sequence_align( self ):
               
-      seq1 = "GCATGCU"  
-      seq2 = "GATTACA"   
+      seq1 = genalign.Sequence( name="seq1", sequence="GCATGCU" ) 
+      seq2 = genalign.Sequence( name="seq2", sequence="GATTACA" )  
       
       match = 1.0
       mismatch = -1.0
@@ -36,25 +36,20 @@ class GeneAlign_tests( unittest.TestCase ):
       
       scoreMatrix = genalign.ScoringMatrix( similarityMatrix, seq1, seq2, gap_penalty )
 
-      print scoreMatrix.score_matrix
+      #print scoreMatrix.score_matrix
       print "score = ", scoreMatrix.score()
       #print scoreMatrix.arrow
-           
-      scoreMatrix.backtrace( seq1, seq2 )
       
-      aligned_seq1, aligned_seq2 = scoreMatrix.backtrace( seq1, seq2 )
+      alignment = scoreMatrix.backtrace( seq1, seq2 )
       
-      print "Seq1: ", seq1
-      print "Seq2: ", seq2
-      print "Aligned Seq1: ", aligned_seq1
-      print "Aligned Seq2: ", aligned_seq2
-      
-      self.assertEqual( aligned_seq1, "GCATG_CU" )
-      self.assertEqual( aligned_seq2, "G_ATTACA" )
+      alignment.write( sys.stdout )
+
+      self.assertEqual( alignment.query_seq.data, "GCATG_CU" )
+      self.assertEqual( alignment.subj_seq.data, "G_ATTACA" )
       
    #/////////////////////////////   
-      seq1 = "IQIFSFIFRQEWNDA"  
-      seq2 = "QIFFFFRMSVEWND" 
+      seq1 = genalign.Sequence( name="seq1", sequence="IQIFSFIFRQEWNDA" )  
+      seq2 = genalign.Sequence( name="seq2", sequence="QIFFFFRMSVEWND"  )
       
       similarityMatrix.readFrom( "JN_blosom50.txt" )
       
@@ -63,12 +58,10 @@ class GeneAlign_tests( unittest.TestCase ):
       #print scoreMatrix.score_matrix
       #print scoreMatrix.arrow
       
-      aligned_seq1, aligned_seq2 = scoreMatrix.backtrace( seq1, seq2 )
+      alignment = scoreMatrix.backtrace( seq1, seq2 )
+      
+      alignment.write( sys.stdout )
 
-      print "Seq1: ", seq1
-      print "Seq2: ", seq2
-      print "Aligned Seq1: ", aligned_seq1
-      print "Aligned Seq2: ", aligned_seq2
 
    #end test_sequence_align ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
