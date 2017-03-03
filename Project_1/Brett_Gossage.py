@@ -14,7 +14,7 @@
 
 # The query protein is from the venom of the European paper wasp (Polistes dominula).
 # Interestingly, the BLASTP search returned significant matches with several species of ants
-# with origins across several continents. There appear to large conserved regions within
+# with origins across several continents. There appear to be large conserved regions within
 # venom proteins of the order Hymenoptera.
 
 # For purpose of this project, the BLASTP result in FASTA format is: "Pol_D_BLASTP.fasta"
@@ -112,7 +112,7 @@ class Alignment:
     #end Alignment.__init__
   
 ##
-## Returnt the alignment identity as a percent.
+## Return the alignment identity as a percent.
 ##
     def identity( self ):
         
