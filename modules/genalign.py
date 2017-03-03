@@ -1,4 +1,3 @@
-#!/usr/bin/python
 #
 #
 # BYS 602, Spring 2017
@@ -16,42 +15,117 @@ A module for computing sequence alignments.
 
 import numpy
 import string
+import re
 import termcolor
-import sys
+
+##
+# A sequence, either nucleic or protein
+#
+class Sequence:
+    
+    def __init__(self, name="", sequence=""):
+        self.name= name
+        self.data = sequence 
+    #end __init__
+        
+    def length( self ):
+        return len(self.data)
+        
+    ## Overload operator []
+    def __getitem__( self, index ):
+        return self.data[index]
+        
+    ## Overload operator [] 
+    def __setitem__( self, index, value ):
+        self.data[index] = value  
+        
+#end class Sequence
+
+##
+# Read a fasta file and return a list of FASTA records.
+#
+def ReadFasta( filename ):
+    
+   with open( filename, "r" ) as fasta_file:
+
+       sequence_list = []  # the returned sequence list
+       sequence = None
+       record_num = -1
+       
+       for line in fasta_file:
+           
+           if not line: continue
+           
+           if line.startswith(">"):
+               sequence = Sequence( name=line[1:])
+               sequence_list.append( sequence )
+               record_num += 1
+           else:
+               if record_num > -1:
+               # We are reading a sequence.  Add subset to the sequence...
+                  subseq = re.sub(r'\s+', '', line)  # Remove whitespace
+                  sequence.data += subseq
+           
+       #end for
+       
+       return sequence_list
+       
+   #end with   
+    
+#end ReadFasta ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ##
 # The alignment of two sequences.
 #
 class Alignment:
     
-    def __init__( self, seq1, seq2 ):
+    def __init__( self, query_seq=Sequence(), subj_seq=Sequence() ):
         
         self.name = ""
         
-        self.seq1 = seq1
-        self.seq2 = seq2
-        self.aligned_seq1 = ""
-        self.aligned_seq2 = ""
+        self.query_seq = query_seq
+        self.subj_seq = subj_seq
         
         self.score = 0.0
+  
+    #end Alignment.__init__  
+    
+    def write( self, outfile ):
         
-        self.colormap = { "c":"black", "_":"red", 2:"green", 3:"yellow", 4:"blue" }
+        outfile.write( "Query: {:s}\n".format(self.query_seq.name ))
+        outfile.write( "Subj: {:s}\n".format(self.subj_seq.name ))
+        outfile.write( "score: {:6.2f}\n\n".format(self.score))
         
-    def write( self ):
-        print self.aligned_seq1
-        for i in range(0,len(self.aligned_seq2)):
-            char = self.aligned_seq2[i]
-            if char != self.aligned_seq1[i]:
-               sys.stdout.write( termcolor.colored( char, "red" ) )
-            else:
-               sys.stdout.write(char)
-        #end for
-               
-        print
+        block_length = 60        
+        count = 0
+        length = self.subj_seq.length()
         
-    #end print ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        while count < length:
+            
+            if count + block_length > length:
+                block_length = length % block_length
+            
+            outfile.write( "Subj:  {:4d}  {:s}\n".format( count+1,
+                                                          self.subj_seq[count:count + block_length])
+                                                        )
+            
+            outfile.write( "Query: {:4d}  ".format( count+1 ) ) 
+        
+            for i in range(count,count + block_length):
+                char = self.query_seq[i]
+                if char != self.subj_seq[i]:
+                   outfile.write( termcolor.colored( char, "red" ) )
+                else:
+                   outfile.write(char)
+            #end for
+            outfile.write( "\n\n" )
+            
+            count += block_length
+                   
+        #end while          
+        
+    #end write ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   #end Alignment.__init__
         
 #end class Alignment
         
@@ -127,9 +201,12 @@ class  SimilarityMatrix:
    # pair of sequence elements
    #
    def similarity( self, aa1, aa2 ):
-
-      n1 = self.indexMap.index( aa1 )
-      n2 = self.indexMap.index( aa2 )
+      try:
+         n1 = self.indexMap.index( aa1 )
+         n2 = self.indexMap.index( aa2 )
+      except(ValueError) as error:
+         msg = str(error) + " for keys: " + aa1 + ":" + aa2
+         raise Exception(msg)
 
       return self.matrix[n1,n2]
 
@@ -160,12 +237,12 @@ class  ScoringMatrix:
 ##
 ## Constructor.
 #
-   def __init__( self, similarityMatrix, seq1, seq2, gapPenalty=-2.0 ):
+   def __init__( self, similarityMatrix, query_seq, subj_seq, gapPenalty=-2.0 ):
    ##
    # Create a scoring matrix using the Needleman-Wunsch method.
    #
-      length1 = len(seq1) + 1
-      length2 = len(seq2) + 1
+      length1 = query_seq.length() + 1
+      length2 = subj_seq.length() + 1
       
       shape = length1, length2
    
@@ -186,7 +263,7 @@ class  ScoringMatrix:
       for i in range(1,length1):
          for j in range(1,length2):
              
-            prob = similarityMatrix.similarity(seq1[i-1],seq2[j-1])  
+            prob = similarityMatrix.similarity(query_seq[i-1],subj_seq[j-1])  
               
             f[0] = self.score_matrix[i-1,j] + gapPenalty
             f[1] = self.score_matrix[i,j-1] + gapPenalty
@@ -202,10 +279,10 @@ class  ScoringMatrix:
    # end constructor ~~~~~~~~~~~~~~~~~~~~~~~~
    
 
-   def backtrace( self, seq1, seq2 ):
+   def backtrace( self, query_seq, subj_seq ):
    ## Backtrace this scoring matrix to align the given sequences.
    
-      ans = Alignment( seq1, seq2 ) # The resulting alignments
+      ans = Alignment() # The resulting alignments
       
       v,h = self.arrow.shape
       
@@ -217,26 +294,27 @@ class  ScoringMatrix:
          direction = self.arrow[v,h]
 
          if direction == 0: # left
-            ans.aligned_seq1 += seq1[v-1]
-            ans.aligned_seq2 += "_"
+            ans.query_seq.data += query_seq[v-1]
+            ans.subj_seq.data += "_"
             v -= 1
          elif direction == 1: # up
-            ans.aligned_seq1 += "_"
-            ans.aligned_seq2 += seq2[h-1]
+            ans.query_seq.data += "_"
+            ans.subj_seq.data += subj_seq[h-1]
             h -= 1
          elif direction == 2: # diagonal
-            ans.aligned_seq1 += seq1[v-1]
-            ans.aligned_seq2 += seq2[h-1]
+            ans.query_seq.data += query_seq[v-1]
+            ans.subj_seq.data += subj_seq[h-1]
             v -= 1
             h -= 1
          if v <= 0 or h <= 0:
              ok = 0
-             
       # end while
              
    #reverse the strings...
-      ans.aligned_seq1 = ans.aligned_seq1[::-1]
-      ans.aligned_seq2 = ans.aligned_seq2[::-1]
+      ans.query_seq = Sequence( name=query_seq.name, sequence=ans.query_seq[::-1] )
+      ans.subj_seq = Sequence( name=subj_seq.name,   sequence=ans.subj_seq[::-1] )
+      
+      ans.score = self.score()
       
       return ans
    
