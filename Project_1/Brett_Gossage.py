@@ -34,7 +34,6 @@ import termcolor # support for printing to the console in color
 import re        # regular expressions
 import string
 import numpy
-import difflib
 
 ############################### BEGIN MODULE CODE #################################################
 
@@ -438,9 +437,12 @@ allignments = []
 progress = 0
 size = len(blastp_seqs)
 
+    
+print "Working..."
+
 # Compare all the BLASTP sequences against the query sequence...
 for bseq in blastp_seqs:
-    
+ 
 # Compute the Needleman-Wunseh scoring matrix...
     scoreMatrix = ScoringMatrix( similarityMatrix, query_seq, bseq, gap_penalty )
       
@@ -452,12 +454,11 @@ for bseq in blastp_seqs:
     
 # Let the user see progress...
     progress += 1
-    if progress % 10:
+    if (progress % 10) == 0:
         print "Working...", float(progress)/float(size) * 100.0, " % "
     
     #end for
-    
-print size, " sequence comparisons completed\n"
+
 
 # Sort the allignments based on the highest score...
 allignments.sort( key = lambda al : al.score, reverse=True )    
@@ -474,12 +475,11 @@ for allignment in allignments:
        break
     print "\n#################################################\n"
     
-    #end for
+    #end for    
     
 #end for
-        
-#end for locus
-    
 
+    
+print size, " sequence comparisons completed\n"
 
 # EOF
