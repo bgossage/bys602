@@ -13,9 +13,9 @@ A module for parsing and storing GenBank data.
 
 """
 
-import sys
 import re
 import string
+
 
 ##
 # A GenBank locus record
@@ -81,7 +81,7 @@ def extract_content( key, next_key, data ):
    loc = pattern.match( data )
 
    if None == loc:
-      print "No Key: ", key
+ #     print "No Key: ", key
       return ""
 
    content = loc.group(1).strip()
@@ -180,18 +180,19 @@ def parse_origin( record, locus ):
    amino_pattern = re.compile( r"(\b[ABCDEFHHIKLMNPQRSTUVWYZX*-]+\b)", re.IGNORECASE )
 
 # Search for a nucleic sequence...
-   sequence = nucleic_pattern.findall( record, start )
+   blocks = nucleic_pattern.findall( record, start )
 
 # If that fails, search for a protein sequence...
    if None == sequence:
-      seqs = amino_pattern.findall( record, start )
+      blocks  = amino_pattern.findall( record, start )
     
 # If both fail just return...
-   if None == sequence:
+   if None == blocks :
        return
        
 # Join the blocked data into a single string...
-   locus.origin = string.join( sequence, "" )
+   locus.origin = string.join( blocks , "" ).upper()
+
 
 #end parse_origin() ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -258,29 +259,5 @@ class GenBankParser:
 
 #end class GenBankParser
 
-def ReadFasta( filename ):
-    
-   with open( filename, "r" ) as fasta_file:
-       
-       lines = []
-       
-       for line in fasta_file:
-           
-           if line.startswith(">"): 
-               continue
-
-       # Replace all whitespace...
-           data = re.sub(r'\s+', '', line)
-               
-           lines.append( data )
-           
-       #end for
-           
-       ans = string.join( lines, "" )
-       
-       return ans
-   #end with   
-    
-#end ReadFasta ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## EOF
