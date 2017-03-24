@@ -29,8 +29,8 @@ for (seq, section_dict) in [ (seq_one, dict_one),(seq_two, dict_two)]:
         # Append the current index...
            section_dict[section].append(i) # At this 
         else:
-        # Found a new sub-sequence. Create a new list containing the current index...
-        # NOTE: the section is the key and the value is a list of indices
+        # Found a new sub-sequence. Added a new key/value pair.
+        # NOTE: The section is the key and the value is a list of indices.
            section_dict[section] = [i] 
 
 # Do not use exceptions for flow control
@@ -40,7 +40,7 @@ for (seq, section_dict) in [ (seq_one, dict_one),(seq_two, dict_two)]:
 #			section_dict[section] = [i]
 			
 # Find any sub-sequences found in both sequences
-# Note: dictionary iteration is over the keys only. So,
+# Note: dictionary iteration is over the keys only, so
 #       this is the intersection of the subseqences.
 matches = set(dict_one).intersection(dict_two)
 print("%i unique matches" %len(matches) )
